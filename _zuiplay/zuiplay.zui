@@ -1,0 +1,1067 @@
+:styleDragSimpleEmit = ZUIStyle {
+	// style for an object
+	permitDragDropInit = 1
+	dragEmitObjectType = simpleItem
+	sendMsgOnDragInit = "type=MySimpleDragInitHandler"
+}
+
+:styleDragSimpleAccept = ZUIStyle {
+	// style for an object that can receive a simpleItem via drag&drop
+	dragAcceptObjectType = simpleItem
+	sendMsgOnDragAccept = "type=MySimpleDragAcceptHandler"
+}
+
+:demoPanel = ZUIStyle {
+	layout = pack
+	pack_side = t
+	layout_padX = 10
+	layout_padY = 10
+	panelColor = 0
+	group = "demos"
+}
+
+:testPanel = ZUIPanel {
+	// This can be used when prototyping zuis
+	parent = root
+	layoutManual = 1
+	layoutManual_x = W w - 2 /
+	layoutManual_y = H h - 2 /
+	layoutManual_w = W 0.8 *
+	layoutManual_h = H 0.8 *
+	hidden = 0
+	layout_padX = 10
+	layout_padY = 10
+
+	+style = styleGlobal
+	layout = pack
+	pack_side = t
+	
+	panelFrame = 4
+	
+	:demos = ZUIPanel {
+		pack_side = l
+		: = ZUIButton {
+			text = "demo 1"
+			sendMsg = "type=ZUIHide toZUIGroup='demos'; type=ZUIShow toZUI=demo1"
+		}
+		: = ZUIButton {
+			text = "demo 2"
+			sendMsg = "type=ZUIHide toZUIGroup='demos'; type=ZUIShow toZUI=demo2"
+		}
+		: = ZUIButton {
+			text = "demo 3"
+			sendMsg = "type=ZUIHide toZUIGroup='demos'; type=ZUIShow toZUI=demo3"
+		}
+		: = ZUIButton {
+			text = "demo 4"
+			sendMsg = "type=ZUIHide toZUIGroup='demos'; type=ZUIShow toZUI=demo4"
+		}
+		: = ZUIButton {
+			text = "demo 5"
+			sendMsg = "type=ZUIHide toZUIGroup='demos'; type=ZUIShow toZUI=demo5"
+		}
+		: = ZUIButton {
+			text = "demo 6"
+			sendMsg = "type=ZUIHide toZUIGroup='demos'; type=ZUIShow toZUI=demo6"
+		}
+		: = ZUIButton {
+			text = "demo 7"
+			sendMsg = "type=ZUIHide toZUIGroup='demos'; type=ZUIShow toZUI=demo7"
+		}
+		: = ZUIButton {
+			text = "demo 8"
+			sendMsg = "type=ZUIHide toZUIGroup='demos'; type=ZUIShow toZUI=demo8"
+		}
+		: = ZUIButton {
+			text = "demo 9"
+			sendMsg = "type=ZUIHide toZUIGroup='demos'; type=ZUIShow toZUI=demo9"
+		}
+		: = ZUIButton {
+			text = "demo 10"
+			sendMsg = "type=ZUIHide toZUIGroup='demos'; type=ZUIShow toZUI=demo10"
+		}
+		: = ZUIButton {
+			text = "demo 11"
+			sendMsg = "type=ZUIHide toZUIGroup='demos'; type=ZUIShow toZUI=demo11"
+		}
+	}
+
+	:demo1 = ZUIPanel {
+		style = demoPanel
+		hidden = 0
+			
+		: = ZUIText {
+			multiline = 1
+			wordWrap = 1
+			!multilineIgnoreWhitespace text
+				DEMO 1\n
+				The following is an example of top to bottom pack.\n
+				Note how the containing panel (blue) expands to incorporate
+				the largest child.
+			!endmultiline
+		}
+		
+		: = ZUIPanel {
+			layout = pack
+			pack_side = t
+			panelColor = 0x000080FF
+			layout_padX = 2
+			layout_padY = 2
+			
+			: = ZUIButton {
+				text = "Button 1"
+			}
+			: = ZUIButton {
+				text = "Button 2"
+			}
+			: = ZUIButton {
+				text = "Longer Button 3"
+			}
+		}
+
+		: = ZUILine {
+			lineEmbossed = 1
+		}
+		
+		: = ZUIButton {
+			text = "Next"
+			sendMsg = "type=ZUIHide toZUI=demo1; type=ZUIShow toZUI=demo2"
+		}
+	}
+
+	:demo2 = ZUIPanel {
+		style = demoPanel
+		hidden = 1
+	
+		: = ZUIText {
+			multiline = 1
+			wordWrap = 1
+			!multilineIgnoreWhitespace text
+				DEMO 2\n
+				The following is an example of filling and aligning elements within their cells.\n
+				Note how button 1 which now has "layout_cellFill = w" expands into the width.\n
+				Note how button 2 which now has "layout_cellAlign = c" centers itself.
+			!endmultiline
+		}
+		
+		: = ZUIPanel {
+			layout = pack
+			pack_side = t
+			panelColor = 0x000080FF
+			layout_padX = 2
+			layout_padY = 2
+			
+			: = ZUIButton {
+				layout_cellFill = w
+				text = "Button 1"
+			}
+			: = ZUIButton {
+				layout_cellAlign = c
+				text = "Button 2"
+			}
+			: = ZUIButton {
+				text = "Longer Button 3"
+			}
+		}
+
+		: = ZUILine {
+			lineEmbossed = 1
+		}
+		
+		: = ZUIPanel {
+			layout = pack
+			pack_side = l
+		
+			: = ZUIButton {
+				text = "Prev"
+				sendMsg = "type=ZUIHide toZUI=demo2; type=ZUIShow toZUI=demo1"
+			}
+
+			: = ZUIButton {
+				text = "Next"
+				sendMsg = "type=ZUIHide toZUI=demo2; type=ZUIShow toZUI=demo3"
+			}
+		}
+	}
+
+	:demo3 = ZUIPanel {
+		style = demoPanel
+		hidden = 1
+		
+		: = ZUIText {
+			multiline = 1
+			wordWrap = 1
+			!multilineIgnoreWhitespace text
+				DEMO 3\n
+				The following is an example of table layout.\n
+				In this case, table_cols is set to 3.\n
+				Note how the maximum child width determines the column sizes.
+			!endmultiline
+		}
+		
+		: = ZUIPanel {
+			layout = table
+			table_cols = 3
+			panelColor = 0x000080FF
+			layout_padX = 2
+			layout_padY = 2
+			
+			: = ZUIButton {
+				text = "Button 1"
+			}
+			: = ZUIButton {
+				text = "Button 2"
+			}
+			: = ZUIButton {
+				text = "Longer Button 3"
+			}
+			: = ZUIButton {
+				text = "Button 4"
+			}
+			: = ZUIButton {
+				text = "B5"
+			}
+			: = ZUIButton {
+				text = "Button 6"
+			}
+		}
+
+		: = ZUILine {
+			lineEmbossed = 1
+		}
+		
+		: = ZUIPanel {
+			layout = pack
+			pack_side = l
+						
+			: = ZUIButton {
+				text = "Prev"
+				sendMsg = "type=ZUIHide toZUI=demo3; type=ZUIShow toZUI=demo2"
+			}
+
+			: = ZUIButton {
+				text = "Next"
+				sendMsg = "type=ZUIHide toZUI=demo3; type=ZUIShow toZUI=demo4"
+			}
+		}
+	}
+	
+	:demo4 = ZUIPanel {
+		style = demoPanel
+		hidden = 1
+		
+		: = ZUIText {
+			multiline = 1
+			wordWrap = 1
+			!multilineIgnoreWhitespace text
+				DEMO 4\n
+				The following is an example of table layout using column weights.\n
+				In this case, table_colWeight1 = 1, table_colWeight2 = 2, table_colWeight3 = 3\n
+				Note how the table has expanded to the maximum width of the parent and the column widths are now 1:2:3
+			!endmultiline
+		}
+		
+		: = ZUIPanel {
+			layout = table
+			table_cols = 3
+			table_colWeight1 = 1
+			table_colWeight2 = 2
+			table_colWeight3 = 3
+			panelColor = 0x000080FF
+			layout_padX = 2
+			layout_padY = 2
+			
+			: = ZUIButton {
+				text = "Button 1"
+				panelColor = 0xFF0080FF
+			}
+			: = ZUIButton {
+				text = "Button 2"
+			}
+			: = ZUIButton {
+				text = "Longer Button 3"
+			}
+			: = ZUIButton {
+				text = "Button 4"
+			}
+			: = ZUIButton {
+				text = "B5"
+			}
+			: = ZUIButton {
+				text = "Button 6"
+			}
+		}
+
+		: = ZUILine {
+			lineEmbossed = 1
+		}
+		
+		: = ZUIPanel {
+			layout = pack
+			pack_side = l
+						
+			: = ZUIButton {
+				text = "Prev"
+				sendMsg = "type=ZUIHide toZUI=demo4; type=ZUIShow toZUI=demo3"
+			}
+
+			: = ZUIButton {
+				text = "Next"
+				sendMsg = "type=ZUIHide toZUI=demo4; type=ZUIShow toZUI=demo5"
+			}
+		}
+	}
+
+	:demo5 = ZUIPanel {
+		style = demoPanel
+		hidden = 1
+	
+		: = ZUIText {
+			multiline = 1
+			wordWrap = 1
+			!multilineIgnoreWhitespace text
+				DEMO 5\n
+				The following is an example of table layout using evenly distributed column widths\n
+				using table_colDistributeEvenly = 1\n
+				Note how the table has expanded to the maximum width and the column widths are now 1:1:1
+			!endmultiline
+		}
+		
+		: = ZUIPanel {
+			layout = table
+			table_cols = 3
+			table_colDistributeEvenly = 1
+			panelColor = 0x000080FF
+			layout_padX = 2
+			layout_padY = 2
+			
+			: = ZUIButton {
+				text = "Button 1"
+			}
+			: = ZUIButton {
+				text = "Button 2"
+			}
+			: = ZUIButton {
+				text = "Longer Button 3"
+			}
+			: = ZUIButton {
+				text = "Button 4"
+			}
+			: = ZUIButton {
+				text = "B5"
+			}
+			: = ZUIButton {
+				text = "Button 6"
+			}
+		}
+
+		: = ZUILine {
+			lineEmbossed = 1
+		}
+		
+		: = ZUIPanel {
+			layout = pack
+			pack_side = l
+						
+			: = ZUIButton {
+				text = "Prev"
+				sendMsg = "type=ZUIHide toZUI=demo5; type=ZUIShow toZUI=demo4"
+			}
+
+			: = ZUIButton {
+				text = "Next"
+				sendMsg = "type=ZUIHide toZUI=demo5; type=ZUIShow toZUI=demo6"
+			}
+		}
+	}
+
+	:demo6 = ZUIPanel {	
+		style = demoPanel
+		hidden = 1
+
+		: = ZUIText {
+			multiline = 1
+			wordWrap = 1
+			!multilineIgnoreWhitespace text
+				DEMO 6\n
+				The following is an example of forcing the width of an element to a certain size.\n
+				In this case, 200 pixels wide on the first button.\n
+			!endmultiline
+		}
+		
+		: = ZUIPanel {
+			layout = pack
+			pack_side = t
+			panelColor = 0x000080FF
+			layout_padX = 2
+			layout_padY = 2
+			
+			: = ZUIButton {
+				layout_forceW = '200'
+				text = "Button 1"
+			}
+			: = ZUIButton {
+				text = "Button 2"
+			}
+		}
+
+		: = ZUILine {
+			lineEmbossed = 1
+		}
+		
+		: = ZUIPanel {
+			layout = pack
+			pack_side = l
+						
+			: = ZUIButton {
+				text = "Prev"
+				sendMsg = "type=ZUIHide toZUI=demo6; type=ZUIShow toZUI=demo5"
+			}
+
+			: = ZUIButton {
+				text = "Next"
+				sendMsg = "type=ZUIHide toZUI=demo6; type=ZUIShow toZUI=demo7"
+			}
+		}
+	}
+
+
+	:demo7 = ZUIPanel {	
+		style = demoPanel
+		hidden = 1
+	
+		: = ZUIText {
+			multiline = 1
+			wordWrap = 1
+			!multilineIgnoreWhitespace text
+				DEMO 7\n
+				The following is an example of adding padding.\n
+				Here layout_padX = 20 and layout_padY = 2\n
+				Note that padding applies to the CONTAINER that does the layout
+				not to the elements whic are being laid out
+			!endmultiline
+		}
+		
+		: = ZUIPanel {
+			layout = pack
+			pack_side = t
+			panelColor = 0x000080FF
+			layout_padX = 20
+			layout_padY = 2
+			
+			: = ZUIButton {
+				text = "Button 1"
+			}
+			: = ZUIButton {
+				text = "Button 2"
+			}
+		}
+
+		: = ZUILine {
+			lineEmbossed = 1
+		}
+		
+		: = ZUIPanel {
+			layout = pack
+			pack_side = l
+						
+			: = ZUIButton {
+				text = "Prev"
+				sendMsg = "type=ZUIHide toZUI=demo7; type=ZUIShow toZUI=demo6"
+			}
+
+			: = ZUIButton {
+				text = "Next"
+				sendMsg = "type=ZUIHide toZUI=demo7; type=ZUIShow toZUI=demo8"
+			}
+		}
+	}
+		
+	:demo8 = ZUIPanel {
+		style = demoPanel
+		hidden = 1
+		
+		: = ZUIText {
+			multiline = 1
+			wordWrap = 1
+			!multilineIgnoreWhitespace text
+				DEMO 8\n
+				The following is an example of drag and drop.  A ZUIPanel or dervived may allow itself
+				to participate in emitting or accepting objects: see styleDragSimpleEmit and
+				styleDragSimpleAccept in the .zui file for this demo.  The colored blocks may be
+				dragged to the other colored containers.  Try dropping the item outside of any container
+				to cancel the operation.  Notification messages are sent to the sending and receiving
+				ZUIs when the drop operation completes.  In this example it is actually ZUI objects being
+				mananged, but the ZUI can refer to any kind of object you want to pass around.
+			!endmultiline
+		}
+		
+		: = ZUIPanel {
+			panelColor = 0xFFA0FFA0
+			
+			layout = table
+			table_cols = 2
+			table_rows = 2
+			table_colDistributeEvenly = 1
+			table_rowDistributeEvenly = 1
+			layout_forceH = 300
+			
+			layout_padX = 10
+			layout_padY = 10
+			
+			:panel1 = ZUIPanel {
+				panelColor = 0x80FF80FF
+				pack_side = T
+				layout_padY = 20
+				style = styleDragSimpleAccept
+				:item1a = ZUIPanel {
+					style = styleDragSimpleEmit
+					panelColor = 0x20FF20FF
+					layout_forceW = 150
+					layout_forceH = 30
+					: = ZUIText {
+						text = item1a
+					}
+				}
+				:item1b = ZUIPanel {
+					style = styleDragSimpleEmit
+					panelColor = 0x20FF20FF
+					layout_forceW = 150
+					layout_forceH = 30
+					: = ZUIText {
+						text = item1b
+					}
+				}
+			}
+
+			:panel2 = ZUIPanel {
+				panelColor = 0xFF8080FF
+				pack_side = T
+				layout_padY = 20
+				style = styleDragSimpleAccept
+				:item2a = ZUIPanel {
+					style = styleDragSimpleEmit
+					panelColor = 0xFF2020FF
+					layout_forceW = 150
+					layout_forceH = 30
+					: = ZUIText {
+						text = item2a
+					}
+				}
+				:item2b = ZUIPanel {
+					style = styleDragSimpleEmit
+					panelColor = 0xFF2020FF
+					layout_forceW = 150
+					layout_forceH = 30
+					: = ZUIText {
+						text = item2b
+					}
+				}
+			}
+
+			:panel3 = ZUIPanel {
+				panelColor = 0x8080FFFF
+				pack_side = T
+				layout_padY = 20
+				style = styleDragSimpleAccept
+				:item3a = ZUIPanel {
+					style = styleDragSimpleEmit
+					panelColor = 0x2020FFFF
+					layout_forceW = 150
+					layout_forceH = 30
+					: = ZUIText {
+						text = item3a
+					}
+				}
+				:item3b = ZUIPanel {
+					style = styleDragSimpleEmit
+					panelColor = 0x2020FFFF
+					layout_forceW = 150
+					layout_forceH = 30
+					: = ZUIText {
+						text = item3b
+					}
+				}
+			}
+
+			:panel4 = ZUIPanel {
+				panelColor = 0xFFFF80FF
+				pack_side = T
+				layout_padY = 20
+				style = styleDragSimpleAccept
+				:item4a = ZUIPanel {
+					style = styleDragSimpleEmit
+					panelColor = 0xFFFF20FF
+					layout_forceW = 150
+					layout_forceH = 30
+					: = ZUIText {
+						text = item4a
+					}
+				}
+				:item4b = ZUIPanel {
+					style = styleDragSimpleEmit
+					panelColor = 0xFFFF20FF
+					layout_forceW = 150
+					layout_forceH = 30
+					: = ZUIText {
+						text = item4b
+					}
+				}
+			}
+		}
+
+		: = ZUILine {
+			lineEmbossed = 1
+		}
+		
+		: = ZUIPanel {
+			layout = pack
+			pack_side = l
+						
+			: = ZUIButton {
+				text = "Prev"
+				sendMsg = "type=ZUIHide toZUI=demo8; type=ZUIShow toZUI=demo7"
+			}
+
+			: = ZUIButton {
+				text = "Next"
+				sendMsg = "type=ZUIHide toZUI=demo8; type=ZUIShow toZUI=demo9"
+			}
+		}		
+	}
+
+	:demo9 = ZUIPanel {	
+		style = demoPanel
+		hidden = 1
+		
+		: = ZUIText {
+			multiline = 1
+			wordWrap = 1
+			!multilineIgnoreWhitespace text
+				DEMO 9\n
+				The following is an example of the border layout which permits putting elements
+				into regions "north", "south", etc. If more than one element goes into a region it stacks vertically\n
+				for north and south and horizontally for east and west
+			!endmultiline
+		}
+		
+		: = ZUIPanel {
+			layout = border
+			panelColor = blue
+			
+			: = ZUIButton {
+				layout_cellAlign = c
+				border_side = n
+				text = "North"
+			}
+			: = ZUIButton {
+				border_side = e
+				text = "East"
+			}
+			: = ZUIButton {
+				border_side = w
+				text = "West 1"
+			}
+			: = ZUIButton {
+				border_side = w
+				text = "West 2"
+			}
+			: = ZUIButton {
+				layout_cellAlign = c
+				border_side = s
+				text = "Bottom 1"
+			}
+			: = ZUIButton {
+				layout_cellAlign = c
+				border_side = s
+				text = "Bottom 2"
+			}
+		}
+
+		: = ZUILine {
+			lineEmbossed = 1
+		}
+		
+		: = ZUIPanel {
+			layout = pack
+			pack_side = l
+						
+			: = ZUIButton {
+				text = "Prev"
+				sendMsg = "type=ZUIHide toZUI=demo9; type=ZUIShow toZUI=demo8"
+			}
+
+			: = ZUIButton {
+				text = "Next"
+				sendMsg = "type=ZUIHide toZUI=demo9; type=ZUIShow toZUI=demo10"
+			}
+		}		
+	}
+	
+	:demo10 = ZUIPanel {	
+		style = demoPanel
+		hidden = 1
+		
+		: = ZUIText {
+			multiline = 1
+			wordWrap = 1
+			!multilineIgnoreWhitespace text
+				DEMO 10\n
+				Border is a bit tricky to use.  You can place things into the corners like "ne" but
+				only if you don't have something in the north.
+			!endmultiline
+		}
+		
+		: = ZUIPanel {
+			layout = border
+			panelColor = blue
+			
+			: = ZUIButton {
+				layout_cellAlign = c
+				border_side = ne
+				text = "Northeast"
+			}
+			: = ZUIButton {
+				layout_cellAlign = c
+				border_side = e
+				text = "East"
+			}
+			: = ZUIButton {
+				border_side = w
+				text = "West 1"
+			}
+			: = ZUIButton {
+				border_side = w
+				text = "West 2"
+			}
+			: = ZUIButton {
+				layout_cellAlign = c
+				border_side = s
+				text = "Bottom 1"
+			}
+			: = ZUIButton {
+				layout_cellAlign = c
+				border_side = s
+				text = "Bottom 2"
+			}
+		}
+
+		: = ZUILine {
+			lineEmbossed = 1
+		}
+		
+		: = ZUIPanel {
+			layout = pack
+			pack_side = l
+						
+			: = ZUIButton {
+				text = "Prev"
+				sendMsg = "type=ZUIHide toZUI=demo10; type=ZUIShow toZUI=demo9"
+			}
+
+			: = ZUIButton {
+				text = "Next"
+				sendMsg = "type=ZUIHide toZUI=demo10; type=ZUIShow toZUI=demo11"
+			}
+		}		
+	}
+
+	:demo11 = ZUIPanel {	
+		style = demoPanel
+		hidden = 1
+		
+		: = ZUIText {
+			multiline = 1
+			wordWrap = 1
+			!multilineIgnoreWhitespace text
+				DEMO 11\n
+				The following is an example of manual layout\n
+				The blue container has the following set:\n
+				@TODO: This is not working right
+				"layoutManual = 1"\n
+				"layoutManual_x = 20"\n
+				"layoutManual_y = 20"\n
+				"layoutManual_w = 100"\n
+				"layoutManual_h = 100"\n
+				Note how the y coordinate is relative to the BOTTOM
+			!endmultiline
+		}
+		
+		: = ZUIPanel {
+			layoutManual = 1
+			layoutManual_x = 20
+			layoutManual_y = 20
+			layoutManual_w = 100
+			layoutManual_h = 100
+			panelColor = blue
+			
+			: = ZUIButton {
+				text = "Button 1"
+			}
+		}
+
+		: = ZUILine {
+			lineEmbossed = 1
+		}
+		
+		: = ZUIPanel {
+			layout = pack
+			pack_side = l
+						
+			: = ZUIButton {
+				text = "Prev"
+				sendMsg = "type=ZUIHide toZUI=demo11; type=ZUIShow toZUI=demo10"
+			}
+
+			: = ZUIButton {
+				text = "Next"
+				sendMsg = "type=ZUIHide toZUI=demo11; type=ZUIShow toZUI=demo12"
+			}
+		}		
+	}
+/*	
+	: = ZUIText {
+		multiline = 1
+		wordWrap = 1
+		!multilineIgnoreWhitespace text
+			Manual layouts can be RPN expressions with the following symbols\n
+			W = width of the parent\n
+			H = height of the parent\n
+			w = width of the child\n
+			h = height of the child\n
+			+ - * / have their usual meaning\n
+			> < are greater than and less than comparisons\n
+			^ takes the maximum of two args\n
+			v takes the minimum of two args\n
+			? is the first arg is true then pushes the second arg otherwise the third\n
+		!endmultiline
+	}
+	
+	: = ZUIPanel {
+		layoutManual = 1
+		layoutManual_x = 'W w - 2 /'
+		layoutManual_y = 20
+		layoutManual_w = 'W 5 / 50 ^'
+			// Width is 1/5 of parent or 50 pixels whichever is greater
+		layoutManual_h = 100
+		panelColor = blue
+		
+		: = ZUIButton {
+			text = "Button 1"
+		}
+	}
+
+	: = ZUIText {
+		multiline = 1
+		wordWrap = 1
+		!multilineIgnoreWhitespace text
+			The following demonstrates mixed layout by nesting panels.  The blue panel\n
+			lays out top to bottom while the red and green layout left to right
+		!endmultiline
+	}
+	
+	: = ZUIPanel {
+		panelColor = blue
+		layout = pack
+		pack_side = t
+		
+		: = ZUIPanel {
+			panelColor = red
+			layout = pack
+			pack_side = l
+			
+			: = ZUIButton {
+				text = "Button 1"
+			}
+			: = ZUIButton {
+				text = "Button 2"
+			}
+		}
+		
+		: = ZUIPanel {
+			panelColor = green
+			layout = pack
+			pack_side = l
+			
+			: = ZUIButton {
+				text = "Second row, button 3"
+			}
+			: = ZUIButton {
+				text = "Second row, button 4"
+			}
+		}
+		
+	}
+
+
+	!createfont name=title file='verdana.ttf' size=14
+	: = ZUIText {
+		multiline = 1
+		wordWrap = 1
+		!multilineIgnoreWhitespace text
+			The following demonstrates a fancy "wizard" dialog box\n
+		!endmultiline
+	}
+	
+	: = ZUIPanel {
+		panelUseColorGradient = 1
+		panelColorGradient0 = 0xd0d0d0FF
+		panelColorGradient1 = 0xc0c0c0FF
+		panelColorGradient2 = 0xd0d0d0FF
+		panelColorGradient3 = 0xc0c0c0FF
+		panelFrame = 4
+		
+		layout_forceW = 500
+		layout_forceH = 450
+
+// BUG: For some reason if I get rid of this sub panel then the border system breaks
+//		: = ZUIPanel {
+//			panelColor = 0
+//			layout_sizeToMax = wh
+			layout = border
+			layout_padX = 10
+			layout_padY = 10
+			layout_indentL = 15
+			layout_indentR = 15
+
+			: = ZUIText {
+				border_side = n
+				layout_cellAlign = c
+				font = title
+				textColor = 0x5050B0FF
+				text = 'Calibration Wizard'
+			}
+
+			: = ZUILine {
+				border_side = n
+				lineEmbossed = 1
+			}
+
+			: = ZUIText {
+				border_side = c
+				wordWrap = 1
+				!multilineIgnoreWhitespace text
+					\nWelcome to the Shadow Garden Calibration Wizard.\n\n
+					Shadow Garden uses a camera to allow the projection to be
+					interactive.  The wizard will guide you though each step
+					of calibrating the camera so that the interaction can work.\n\n
+					First, check that you have done all of the following.  If you
+					have not, you should quit the program and fix these issues
+					before proceeding.  Refer to the documentation to address each one.\n\n
+				!endmultiline
+			}
+
+			: = ZUIButton {
+				border_side = se
+				text = 'Begin >>'
+			}
+
+			: = ZUIButton {
+				border_side = sw
+				text = 'Cancel'
+			}
+		}
+//	}
+
+	
+
+	: = ZUIText {
+		multiline = 1
+		wordWrap = 1
+		!multilineIgnoreWhitespace text
+			The following demonstrates a scrolling panel
+		!endmultiline
+	}
+	
+	: = ZUIPanel {
+		panelColor = blue
+		layout = pack
+		pack_side = t
+		permitScrollY = 1
+			// Bug, scroll should clip
+		permitScrollX = 1
+			// Bug, scrollX doesn't seem right
+		layout_forceH = 100
+		layout_forceW = 50
+		clipToBounds = 1
+			// BUG: When clip is on, text is clipped but not buttons
+
+		: = ZUIButton {
+			text = "Button 1"
+		}
+		: = ZUIButton {
+			text = "Button 2"
+		}
+		: = ZUIButton {
+			text = "Button 3"
+		}
+		: = ZUIButton {
+			text = "Button 4"
+		}
+		: = ZUIButton {
+			text = "Button 4"
+		}
+		: = ZUIButton {
+			text = "Button 4"
+		}
+		: = ZUIButton {
+			text = "Button 4"
+		}
+		: = ZUIButton {
+			text = "Button 4"
+		}
+	}
+	*/
+}
+
+
+// TODO: show different panel type, panel gradients
+// radio buttons, check buttons, text inputs
+// show selectd buttons, sending messages
+// show styles
+// More table examples?
+// Show ZUISet
+// test layout_forceW aand H more
+// Make layoutManeual be more consistent with the form "layout = manual"
+// file open
+// tab panel
+
+/*
+
+:funStyle = ZUI {
+	parent = styleGlobal
+	buttonTextColor = green
+}
+
+:panel1 = ZUIPanel {
+	parent = root
+	+buttonTextColor = blue
+
+	:panel2 = ZUIButton {
+		//style = funStyle
+		//buttonTextColor = red
+		text = "Button 2"
+	}
+	: = ZUIButton {
+		//style = funStyle
+		//buttonTextColor = red
+		text = "Button 3"
+	}
+}
+*/
+
+/*
+:test1 = ZUIPanel {
+	parent = root
+	*buttonTextColor = white
+
+	:butt1 = ZUIButton {
+		text = "Button 1"
+	}
+	:butt2 = ZUIButton {
+		text = "Button 2"
+	}
+}
+
+
+*/

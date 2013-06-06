@@ -1,0 +1,21 @@
+:cell = GUIObject {
+	layoutManager = place
+	parent = root
+
+	:distPlot = GUIAreaPlot {
+		panelColor = 0x404040c0
+		placeChildOption_h = 310
+		placeChildOption_w = 310
+		placeChildOption_r = ''
+		placeChildOption_t = ''
+		placeChildOption_b = B
+		placeChildOption_l = L
+
+		gridVert = 1
+		gridMajorColor = 0xFFFFFF80
+		gridMinorColor = 0x80808080
+		allowMouseRescale = "R"
+		seriesColor-0 = 0x00FF0040`
+		seriesColor-1 = 0x0000FF40
+	}
+}

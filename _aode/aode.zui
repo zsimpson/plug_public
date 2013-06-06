@@ -1,0 +1,107 @@
+
+:aodeFitterPanel = ZUIPanel {
+	parent = root
+	layoutManual = 1
+	layoutManual_x = '0'
+	layoutManual_y = 'H h -'
+	layoutManual_w = '800'
+	layoutManual_h = '600'
+	pack_side = t
+	style = styleDialog
+
+	panelColor = 0x808080a0
+
+	: = ZUIText {
+		style = styleDialogTitle
+		text = 'Fitter Status'
+	}
+
+	: = ZUILine {
+		panelColor = 0
+		lineEmbossed = 1
+	}
+
+	: = ZUIPanel {
+		panelColor = 0
+		layout_padY = 10
+		layout_padX = 10
+
+		: = ZUIFitterStatusText {
+			localName = statusText
+			panelColor = 0
+			wordWrap = 1
+			multiline = 1
+			layout_forceW = 150
+		}
+
+		: = ZUIPanel {
+			panelColor = 0
+			pack_side = t
+			layout_padY = 6
+			layout_padX = 2
+
+			: = ZUIText {
+				style = styleSubheader
+				text = 'Noise spectrum'
+			}
+
+			:aodeFitterFFTNoisePlot = ZUIFitterFFTNoisePlot {
+				panelFrame = 2
+				panelColor = 0x00000020
+				layout_cellFill = wh
+				layout_forceH = 50
+			}
+
+			: = ZUIText {
+				style = styleSubheader
+				text = 'Eigen components of signal to noise ratio'
+			}
+
+			:aodeFitterSVDBarPlot = ZUIFitterSVDBarPlot {
+				panelFrame = 2
+				panelColor = 0x00000020
+				layout_cellFill = wh
+				layout_forceW = 300
+				layout_forceH = 250
+			}
+		}
+
+		: = ZUIPanel {
+			panelColor = 0
+			pack_side = t
+			layout_padY = 2
+			layout_padX = 2
+			pack_fillLast = 1
+			layout_cellFill = wh
+
+			: = ZUIText {
+				style = styleSubheader
+				text = 'Parameters'
+			}
+
+			:aodeFitterParameterAdjustPlot = ZUIFitterParameterAdjustPlot {
+				panelColor = 0
+				layout_forceW = 200
+				layout_cellFill = wh
+			}
+		}
+	}
+
+	: = ZUIPanel {
+		style = styleGroupL
+
+		: = ZUIButton {
+			text = 'Step'
+			sendMsg = 'type=FitterStep'
+		}
+
+		: = ZUIButton {
+			text = 'Run'
+			sendMsg = 'type=FitterRun'
+		}
+	}
+
+}
+
+
+

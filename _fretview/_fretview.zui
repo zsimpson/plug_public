@@ -1,0 +1,541 @@
+:styleFretviewSectionHeader = ZUI {
+	parent = styleGlobal
+	font = header
+	textColor = 0x000000FF
+	layout_cellAlign = c
+}
+
+:styleFretviewTwiddler = ZUI {
+	parent = styleGlobal
+	panelColor = 0
+	varPanelColorEditMode = 0x505050FF
+	varPanelFrameEditMode = 2
+	varTextColorEditMode = 0xFFFF66FF
+	varTextColor = 0xFFFF33FF
+}
+
+:fretviewZUI = ZUIPanel {
+	parent = root
+
+	permitScrollY = 1
+
+	layoutManual = 1
+	layoutManual_x = 0
+	layoutManual_y = 0
+	layoutManual_w = 300
+	layoutManual_h = 10000
+
+	layout_padX = 10
+	layout_padY = 10
+
+	pack_side = t
+	pack_fillOpposite = 1
+	layout_cellFill = wh
+	panelColor = 0xc0c0c0ff
+
+	+style = styleGlobal
+
+	: = ZUIButton {
+		text = 'Switch to Capture Mode'
+		sendMsg = "type=PluginChange which=fretcapt"
+	}
+
+	// FILE open and information panel
+	//-------------------------------------------------------------
+	: = ZUIPanel {
+		style = styleIndent1
+		pack_side = t
+		layout_cellFill = w
+		*layout_padX = 2
+		*layout_padY = 2
+		pack_fillOpposite = 1
+
+		:= ZUIPanel {
+			panelColor = 0
+
+			:= ZUIText {
+				style = styleFretviewSectionHeader
+				text = "File State"
+			}
+		}
+
+		: = ZUILine {
+			lineEmbossed = 1
+		}
+
+		: = ZUIPanel {
+			style = styleGroupT
+
+			: = ZUIPanel {
+				style = styleGroupL
+
+				: = ZUIButton {
+					text = 'Open...'
+					sendMsg = "type=Fretview_VidOpen"
+				}
+
+				: = ZUIButton {
+					text = 'Autoscale'
+					sendMsg = "type=Fretview_autoscale"
+				}
+			
+
+				:loadStatus = ZUIText { 
+					layout_cellAlign = c
+					text = "No file loaded"
+				}
+			}
+		}
+		
+		: = ZUIPanel {
+			panelColor = 0
+			layout = table
+			table_cols = 2
+
+			: = ZUIText {
+				text = "File:"
+			}
+			:fretviewFile = ZUIText {
+			}
+			: = ZUIText {
+				text = "Dimensions:"
+			}
+			:fretviewDimensions = ZUIText {
+			}
+			: = ZUIText {
+				text = "Frames:"
+			}
+			:fretviewFrames = ZUIText {
+			}
+			: = ZUIText {
+				text = "Bin:"
+			}
+			:fretviewBin = ZUIText {
+			}
+			: = ZUIText {
+				text = "Regions:"
+			}
+			: = ZUIVar {
+				style = styleFretviewTwiddler
+				zvar = Fretview_regionCount
+			}
+		}
+	}
+
+	// DEBUG panel
+	//-------------------------------------------------------------
+//	: = ZUIPanel {
+//		style = styleIndent1
+//		pack_side = t
+//		layout_cellFill = w
+//		*layout_padX = 2
+//		*layout_padY = 2
+//		pack_fillOpposite = 1
+//
+//		:= ZUIPanel {
+//			panelColor = 0
+//
+//			:= ZUIText {
+//				style = styleFretviewSectionHeader
+//				text = "Debug Info"
+//			}
+//		}
+//
+//		: = ZUILine {
+//			lineEmbossed = 1
+//		}
+//
+//		:= ZUIPanel {
+//			style = styleGroupT
+//			panelColor = 0
+//			: = ZUIButton {
+//				text = 'Test Python'
+//				sendMsg = 'type=Fretview_TestPython'
+//			}
+//			:debugInfo = ZUIText { 
+//				layout_cellFill = w
+//				wordWrap = 0
+//			}
+//		}
+//	}
+
+	// Python panel
+	//-------------------------------------------------------------
+	:pythonPanel = ZUIPanel {
+		style = styleIndent1
+		pack_side = t
+		layout_cellFill = w
+		*layout_padX = 2
+		*layout_padY = 2
+		pack_fillOpposite = 1
+
+		:= ZUIPanel {
+			panelColor = 0
+
+			:= ZUIText {
+				style = styleFretviewSectionHeader
+				text = "Python Console"
+			}
+		}
+
+		: = ZUILine {
+			lineEmbossed = 1
+		}
+
+		:= ZUIPanel {
+			style = styleGroupT
+			panelColor = 0
+
+			:pythonFileName = ZUIText {
+				text = ""
+				textColor = 0x000066FF
+				layout_cellFill = wh
+			}
+
+			: = ZUIPanel {
+				panelColor = 0
+				layout = table
+				table_cols = 2
+
+				:pythonOpenButton = ZUIButton {
+					text = 'Open Script...'
+					sendMsg = 'type=PythonOpen'
+				}
+
+				:pythonClearButton = ZUIButton {
+					text = 'Clear Script'
+					sendMsg = 'type=PythonClear'
+				}
+			}
+
+			:pythonTextEditor = ZUITextEditor {
+				textEditTextColor = 0xFFFFFFFF
+				textEditTextColorDisabled = 0x555555FF
+				text = "print 'hello world';"
+				layout_cellFill = wh
+				layout_forceH = 32
+				layout_forceW = 270
+				multiline = 1
+				wordwrap = 0
+			}
+			
+			: = ZUIPanel {
+				panelColor = 0
+				layout = table
+				table_cols = 2
+				
+				:pythonRunButton = ZUIButton {
+					text = 'Run Script'
+					sendMsg = 'type=PythonRun'
+				}
+				
+				:pythonHaltButton = ZUIButton {
+					text = 'Halt Script'
+					sendMsg = 'type=PythonHalt'
+				}
+			}
+			
+			:pythonOutput = ZUIText { 
+				layout_forceH = 16
+				layout_cellFill = wh
+				wordWrap = 1
+			}
+		}
+	}
+
+	// SPOT finder panel
+	//-------------------------------------------------------------
+	: = ZUIPanel {
+		style = styleIndent1
+		pack_side = t
+		layout_cellFill = w
+		*layout_padX = 2
+		*layout_padY = 2
+		pack_fillOpposite = 1
+
+		:= ZUIPanel {
+			panelColor = 0
+
+			:= ZUIText {
+				style = styleFretviewSectionHeader
+				text = "Spot Finding"
+			}
+		}
+
+		: = ZUILine {
+			lineEmbossed = 1
+		}
+
+		: = ZUIPanel {
+			panelColor = 0
+			layout = table
+			table_cols = 2
+
+			: = ZUIText {
+				text = "Hat:"
+			}
+			: = ZUIVar {
+				style = styleFretviewTwiddler
+				zvar = Fretview_peakMaskHatRadius
+			}
+
+			: = ZUIText {
+				text = "Brim:"
+			}
+			: = ZUIVar {
+				style = styleFretviewTwiddler
+				zvar = Fretview_peakMaskBrimRadius
+			}
+
+			: = ZUIText {
+				text = "Annulus:"
+			}
+			: = ZUIVar {
+				style = styleFretviewTwiddler
+				zvar = Fretview_peakMaskAnnulusRadius
+			}
+
+			: = ZUIText {
+				text = "Contention:"
+			}
+			: = ZUIVar {
+				style = styleFretviewTwiddler
+				zvar = Fretview_peakContentionRadius
+			}
+
+			: = ZUIText {
+				text = "Threshold mass:"
+			}
+			: = ZUIVar {
+				style = styleFretviewTwiddler
+				zvar = Fretview_peakMassThreshold
+			}
+		}
+
+		: = ZUIPanel {
+			style = styleGroupT
+			*layout_cellFill = w
+
+			:fretviewViewFilterToggle = ZUIButton {
+				toggle = 1
+				text = 'View filter'
+				sendMsgOnSelect = "type=Fretview_ViewFilter state=1"
+				sendMsgOnUnselect = "type=Fretview_ViewFilter state=0"
+			}
+
+			: = ZUIButton {
+				text = 'Peak Find Selected Time Region'
+				sendMsg = "type=Fretview_Filter; type=Fretview_PeakFind; type=ZUISet key=selected val=1 toZUI=fretviewViewFilterToggle"
+			}
+
+			: = ZUIPanel {
+				style = styleGroupL
+
+				:fretviewMapLft = ZUIButton {
+					text = 'Peaks ->'
+					sendMsg = 'type=Fretview_PeakMap which=0'
+				}
+
+				:fretviewMapCtr = ZUIButton {
+					text = 'Peaks <->'
+					sendMsg = 'type=Fretview_PeakMap which=-1'
+				}
+				
+				:fretviewMapRgt = ZUIButton {
+					text = 'Peaks <-'
+					sendMsg = 'type=Fretview_PeakMap which=-2'
+				}
+			}
+
+			: = ZUIPanel {
+				panelColor = 0
+				layout = table
+				table_cols = 2
+
+				:fretviewPeakOpt = ZUIButton {
+					text = 'Peaks Optimize'
+					sendMsg = 'type=Fretview_PeakOptimize'
+				}
+				: = ZUIButton {
+					text = 'Peaks Clear'
+					sendMsg = 'type=Fretview_PeakClear'
+				}
+			}
+
+#			: = ZUIButton {
+#				text = 'Autocorrelation'
+#				sendMsg = 'type=Fretview_Autocorrelation'
+#			}
+		}
+
+		:fretviewSpotInfoWarning = ZUIText {
+			layout_cellFill = wh
+			wordWrap = 1
+			textColor = 0x802020FF
+			layout_forceH = 130
+			text = "Invalid Calibration. Please Calibrate."
+		}
+
+		:fretviewSpotInfoPanel = ZUIPanel {
+			layout = table
+			table_cols = 4
+			table_colDistributeEvenly = 1
+			layout_cellFill = wh
+			layout_forceH = 130
+			panelColor = 0
+
+			:fretviewSpotInfoTitle = ZUIText { 
+				layout_cellFill = wh
+				wordWrap = 1
+				textColor = 0x006000FF
+			}
+			:fretviewSpotInfo0 = ZUIText { 
+				layout_cellFill = wh
+				wordWrap = 1
+				textColor = 0x800000FF
+			}
+			:fretviewSpotInfo1 = ZUIText { 
+				layout_cellFill = wh
+				wordWrap = 1
+				textColor = 0x800000FF
+			}
+			:fretviewSpotInfo2 = ZUIText { 
+				layout_cellFill = wh
+				wordWrap = 1
+				textColor = 0x800000FF
+			}
+		}
+	}
+
+	// CALIBRATION panel
+	//-------------------------------------------------------------
+	: = ZUIPanel {
+		style = styleIndent1
+		pack_side = t
+		layout_cellFill = w
+		layout_padX = 8
+		layout_padY = 2
+		pack_fillOpposite = 1
+
+		:= ZUIPanel {
+			panelColor = 0
+			layout = table
+			table_cols = 2
+
+			:= ZUIText {
+				style = styleFretviewSectionHeader
+				text = "Calibration  "
+			}
+			:fretviewCalibStatus = ZUIText {
+				varTextColor = 0xFFFF33FF
+				text = ""
+			}
+		}
+
+		: = ZUILine {
+			lineEmbossed = 1
+		}
+
+		: = ZUIPanel {
+			style = styleGroupL
+
+			: = ZUIButton {
+				text = 'Load...'
+				sendMsg = "type=Fretview_CalibLoad"
+			}
+
+			:fretviewCalibSaveAs = ZUIButton {
+				text = 'Save As...'
+				sendMsg = "type=Fretview_CalibSaveAs"
+			}
+
+			:fretviewCalibSave = ZUIButton {
+				text = 'Save'
+				sendMsg = "type=Fretview_CalibSave"
+			}
+		}
+
+		: = ZUIPanel {
+			style = styleGroupL
+
+			:fretviewCalibView = ZUIButton {
+				toggle = 1
+				text = 'View spots'
+				sendMsgOnSelect = "type=Fretview_CalibView state=1"
+				sendMsgOnUnselect = "type=Fretview_CalibView state=0"
+			}
+
+			: = ZUIButton {
+				text = 'New Spot'
+				sendMsg = "type=Fretview_CalibAdd"
+			}
+
+			: = ZUIButton {
+				text = 'Clear Spots'
+				sendMsg = "type=Fretview_CalibClear"
+			}
+		}
+
+		:fretviewCalibFilename = ZUIText { 
+			wordWrap = 0
+			layout_cellForceH = 30
+		}
+	}
+
+	// ANALYSIS panel
+	//-------------------------------------------------------------
+	: = ZUIPanel {
+		style = styleIndent1
+		pack_side = t
+		layout_cellFill = w
+		*layout_padX = 2
+		*layout_padY = 2
+		pack_fillOpposite = 1
+
+		:= ZUIPanel {
+			panelColor = 0
+
+			:= ZUIText {
+				style = styleFretviewSectionHeader
+				text = "Analysis"
+			}
+		}
+
+		: = ZUILine {
+			lineEmbossed = 1
+		}
+
+		: = ZUIPanel {
+			style = styleGroupL
+			:fretviewSequence = ZUIButton {
+				text = 'Write sequence files'
+				sendMsg = "type=Fretview_SaveSeqFile"
+			}
+			:fretviewSeqProgress = ZUIText { 
+				wordWrap = 0
+			}
+		}
+
+		: = ZUIPanel {
+			panelColor = 0
+
+			:fretviewAnalysis = ZUIButton {
+				text = 'Dump analysis'
+				sendMsg = "type=Fretview_DumpAnalysis"
+			}
+
+			: = ZUICheck {
+				layout_cellAlign = c
+				selected = 1
+				text = "Dump all time"
+				selectedVar = Fretview_dumpAllTime
+			}
+		}
+
+		:fretviewAnalysisInfo = ZUIText { 
+			layout_cellFill = wh
+			layout_forceH = 60
+			wordWrap = 1
+		}
+	}
+}

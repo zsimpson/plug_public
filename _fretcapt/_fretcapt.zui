@@ -1,0 +1,332 @@
+:styleFretcaptSectionHeader = ZUI {
+	parent = styleGlobal
+	font = header
+	textColor = 0x000000FF
+	layout_cellAlign = c
+}
+
+:styleFretcaptTwiddler = ZUI {
+	parent = styleGlobal
+	panelColor = 0
+	varPanelColorEditMode = 0x505050FF
+	varPanelFrameEditMode = 2
+	varTextColorEditMode = 0xFFFF66FF
+	varTextColor = 0xFFFF33FF
+}
+
+:fretcaptZUI = ZUIPanel {
+	parent = root
+
+	permitScrollY = 1
+
+	layoutManual = 1
+	layoutManual_x = 0
+	layoutManual_y = 0
+	layoutManual_w = 300
+	layoutManual_h = H
+
+	layout_padX = 10
+	layout_padY = 10
+
+	pack_side = t
+	pack_fillOpposite = 1
+	layout_cellFill = wh
+	panelColor = 0xc0c0c0ff
+
+	+style = styleGlobal
+
+	: = ZUIButton {
+		text = 'Switch to Analyze Mode'
+		sendMsg = "type=PluginChange which=fretview"
+	}
+
+	: = ZUIPanel {
+		panelColor = 0
+		layout = table
+		table_cols = 2
+		: = ZUIText {
+			text = "Devices are: "
+		}
+		
+		:fretcaptDeviceInfo = ZUIText {
+			text = "Live"
+			font = subheader
+		}
+	}
+	
+	// Camera
+	//-------------------------------------------------------------
+	: = ZUIPanel {
+		style = styleIndent1
+		pack_side = t
+		layout_cellFill = w
+		*layout_padX = 2
+		*layout_padY = 2
+		pack_fillOpposite = 1
+
+		:= ZUIPanel {
+			panelColor = 0
+
+			:= ZUIText {
+				style = styleFretcaptSectionHeader
+				text = "Camera Status"
+			}
+		}
+
+		: = ZUILine {
+			lineEmbossed = 1
+		}
+
+		: = ZUIPanel {
+			style = styleGroupT
+			pack_fillOpposite = 1
+			layout_cellFill = wh
+
+			:cameraStartButton = ZUIButton {
+				text = 'Camera Start'
+				sendMsg = "type=Fretcapt_CameraStart"
+			}
+
+			:cameraStopButton = ZUIButton {
+				text = 'Camera Shutdown'
+				hidden = 1
+				sendMsg = "type=Fretcapt_CameraShutdown"
+			}
+
+			: = ZUIButton {
+				text = 'Autoscale'
+				sendMsg = "type=Fretcapt_Autoscale"
+			}
+
+			: = ZUIButton {
+				text = 'Record'
+				toggle = 1
+				sendMsgOnSelect = "type=Fretcapt_CameraRecord; type=ZUISet key=text val='Stop' toZUI=$this"
+				sendMsgOnUnselect = "type=Fretcapt_CameraStop; type=ZUISet key=text val='Record' toZUI=$this"
+			}
+
+			: = ZUIButton {
+				text = 'Snapshot'
+				sendMsg = "type=Fretcapt_Snapshot"
+			}
+
+			:fretcaptStatusText = ZUIText { 
+				layout_cellFill = wh
+				layout_forceH = 150
+				wordWrap = 1
+				text = "Camera off"
+			}
+
+			:fretcaptCameraStatusText = ZUIText {
+				layout_cellFill = wh
+				layout_forceH = 40
+				wordWrap = 1
+			}
+		}
+	}
+
+	// ROI and speed
+	//-------------------------------------------------------------
+	: = ZUIPanel {
+		style = styleIndent1
+		pack_side = t
+		layout_cellFill = w
+		*layout_padX = 2
+		*layout_padY = 2
+		pack_fillOpposite = 1
+
+		:= ZUIPanel {
+			panelColor = 0
+
+			:= ZUIText {
+				style = styleFretcaptSectionHeader
+				text = "Camera Settings"
+			}
+		}
+
+		: = ZUILine {
+			lineEmbossed = 1
+		}
+
+		: = ZUIPanel {
+//			style = styleGroupT
+			pack_side = t
+			pack_fillOpposite = 1
+			layout_cellFill = wh
+			panelColor = 0
+
+			: = ZUIButton {
+				toggle = 1
+				text = 'Set Recording Area'
+				sendMsg = "type=Fretcapt_SetROI; "
+				sendMsgOnSelect = "type=Fretcapt_SetROI; type=ZUISet key=text val='Activate' toZUI=$this"
+				sendMsgOnUnselect = "type=Fretcapt_ActivateROI; type=ZUISet key=text val='Set Recording Area' toZUI=$this"
+			}
+
+			: = ZUIPanel {
+				panelColor = 0
+
+				: = ZUIText {
+					text = "Exposre FPS: "
+					font = subheader
+				}
+
+				: = ZUIVar {
+					layout_forceW = 50
+					style = styleFretcaptTwiddler
+					zvar = Fretcapt_fps
+					sendMsgOnVarChanging = "type=Fretcapt_CameraSetExposure"
+					sendMsgOnEditComplete = "type=Fretcapt_CameraSetExposure"
+					formatShortest = 1
+				}
+			}
+
+			: = ZUIPanel {
+				panelColor = 0
+
+				: = ZUIText {
+					text = "Binning: "
+					font = subheader
+				}
+
+				: = ZUIVar {
+					layout_forceW = 50
+					style = styleFretcaptTwiddler
+					zvar = Fretcapt_bin
+					sendMsgOnVarChanging = "type=Fretcapt_CameraSetBin"
+					sendMsgOnEditComplete = "type=Fretcapt_CameraSetBin"
+					formatShortest = 1
+				}
+			}
+
+			: = ZUIPanel {
+				panelColor = 0
+
+				: = ZUIText {
+					text = "Temperature: "
+					font = subheader
+				}
+
+				: = ZUIVar {
+					layout_forceW = 50
+					style = styleFretcaptTwiddler
+					zvar = Fretcapt_setTemperature
+					sendMsgOnVarChanging = "type=Fretcapt_CameraSetTemperature"
+					sendMsgOnEditComplete = "type=Fretcapt_CameraSetTemperature"
+					formatShortest = 1
+				}
+			}
+
+			: = ZUIPanel {
+				panelColor = 0
+
+				: = ZUIText {
+					text = "EM Gain: "
+					font = subheader
+				}
+
+				: = ZUIVar {
+					layout_forceW = 50
+					style = styleFretcaptTwiddler
+					zvar = Fretcapt_emGain
+					sendMsgOnVarChanging = "type=Fretcapt_CameraSetEMGain"
+					sendMsgOnEditComplete = "type=Fretcapt_CameraSetEMGain"
+					formatShortest = 1
+				}
+			}
+
+		}
+	}
+	
+	// Python panel
+	//-------------------------------------------------------------
+	:pythonPanel = ZUIPanel {
+		style = styleIndent1
+		pack_side = t
+		layout_cellFill = w
+		*layout_padX = 2
+		*layout_padY = 2
+		pack_fillOpposite = 1
+
+		:= ZUIPanel {
+			panelColor = 0
+			layout = table
+			table_cols = 2
+			
+			:= ZUIText {
+				style = styleFretcaptSectionHeader
+				text = "Python Console"
+			}
+
+			:pythonDebugNote = ZUIText {
+				text = ""
+			}
+		}
+
+		: = ZUILine {
+			lineEmbossed = 1
+		}
+
+		:= ZUIPanel {
+			style = styleGroupT
+			panelColor = 0
+
+			:pythonFileName = ZUIText {
+				text = ""
+				textColor = 0x000066FF
+				layout_cellFill = wh
+			}
+
+			: = ZUIPanel {
+				panelColor = 0
+				layout = table
+				table_cols = 2
+
+				:pythonOpenButton = ZUIButton {
+					text = 'Open Script...'
+					sendMsg = 'type=PythonOpen'
+				}
+
+				:pythonClearButton = ZUIButton {
+					text = 'Clear Script'
+					sendMsg = 'type=PythonClear'
+				}
+			}
+
+			:pythonTextEditor = ZUITextEditor {
+				textEditTextColor = 0xFFFFFFFF
+				textEditTextColorDisabled = 0x555555FF
+				text = "print 'hello world';"
+				layout_cellFill = wh
+				layout_forceH = 200
+				layout_forceW = 270
+				multiline = 1
+				wordwrap = 0
+			}
+			
+			: = ZUIPanel {
+				panelColor = 0
+				layout = table
+				table_cols = 2
+				
+				:pythonRunButton = ZUIButton {
+					text = 'Run Script'
+					sendMsg = 'type=PythonRun'
+				}
+				
+				:pythonHaltButton = ZUIButton {
+					text = 'Halt Script'
+					sendMsg = 'type=PythonHalt'
+				}
+			}
+			
+			:pythonOutput = ZUIText { 
+				layout_forceH = 16
+				layout_cellFill = wh
+				wordWrap = 1
+			}
+		}
+	}
+}
+
+

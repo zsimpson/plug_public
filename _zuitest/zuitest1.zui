@@ -1,0 +1,26 @@
+
+:testDescription = ZUIText {
+	multiline = 1
+	wordWrap = 1
+	!multilineIgnoreWhitespace text
+		The following is an example of top to bottom pack.\n
+		Note how the containing panel (blue) expands to incorporate
+		the largest child.
+	!endmultiline
+}
+
+:testPanel = ZUIPanel {
+	layout = pack
+	pack_side = t
+	panelColor = blue
+	
+	: = ZUIButton {
+		text = "Button 1 says me"
+	}
+	: = ZUIButton {
+		text = "Button 2"
+	}
+	: = ZUIButton {
+		text = "Longer Button 3"
+	}
+}

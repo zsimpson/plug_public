@@ -1,0 +1,274 @@
+
+:ExampleStyleSectionHeader = ZUI {
+	parent = styleGlobal
+	font = header
+	textColor = 0x000000FF
+	layout_cellAlign = c
+}
+
+:ExampleStyleTwiddler = ZUI {
+	parent = styleGlobal
+	panelColor = 0
+
+	varPanelColorEditMode = 0x505050FF
+	varPanelFrameEditMode = 2
+	varTextColorEditMode = 0xFFFF66FF
+	varTextColor = 0xFFFF33FF
+
+}
+
+:templ2MainUIPanel = ZUIPanel {
+
+	parent = root
+	permitScrollY = 1
+
+	layoutManual = 1
+	layoutManual_x = 0
+	layoutManual_y = 0
+	layoutManual_w = 360
+	layoutManual_h = 10000
+
+	layout_padX = 10
+	layout_padY = 10
+
+	pack_side = t
+	pack_fillOpposite = 1
+	layout_cellFill = wh
+	panelColor = 0xc0c0c0ff
+
+	+style = styleGlobal
+
+
+	// MODEL EDITOR
+	//-----------------------------------------------------------------
+	:modelEditContainerPanel = ZUIPanel {
+		style = styleIndent1
+		pack_side = t
+		layout_cellFill = w
+		*layout_padX = 2
+		*layout_padY = 2
+
+		:= ZUIPanel {
+			panelColor = 0
+
+			:= ZUIButton {
+				text = '+'
+				selected = 1
+				toggle = 1
+				layout_cellAlign = c
+				sendMsgOnSelect = "type=ZUIShow toZUI=modelEditPanel; type=ZUISet key=text val='-' toZUI=$this"
+				sendMsgOnUnselect = "type=ZUIHide toZUI=modelEditPanel; type=ZUISet key=text val='+' toZUI=$this"
+			}
+
+			:= ZUIText {
+				style = ExampleStyleSectionHeader
+				text = "Model Editor"
+			}
+		}
+
+		:modelEditPanel = ZUIPanel {
+			style = styleGroupT
+
+			: = ZUILine {
+				lineEmbossed = 1
+			}
+
+			:modelPanel = ZUIPanel {
+				style = styleGroupL
+				: = ZUIButton {
+					text = 'New...'
+					sendMsg = "type=File_New"
+				}
+				: = ZUIButton {
+					text = 'Open...'
+					sendMsg = "type=File_Open"
+				}
+				:saveModel = ZUIButton {
+					text = 'Save'
+					sendMsg = "type=File_Save"
+				}
+				:saveModelAs = ZUIButton {
+					text = 'Save As...'
+					sendMsg = "type=File_SaveAs"
+				}
+			}
+
+			: = ZUIPanel {
+				style = styleGroupL
+				layout_cellFill = w
+				pack_fillLast = 1
+
+				: = ZUIText {
+					style = styleSubheader
+					text = "Filename "
+				}
+
+				:modelFilename = ZUIText {
+					layout_cellFill = w
+					panelColor = textAreaColor
+					text = "<none selected>"
+					wordWrap = 1
+				}
+			}
+		}
+	}
+
+		// DATAFIT panel
+	//-----------------------------------------------------------------
+	:examplePanelHeader = ZUIPanel {
+		style = styleIndent1
+		pack_side = t
+		layout_cellFill = w
+		*layout_padX = 2
+		*layout_padY = 2
+
+		:= ZUIPanel {
+			panelColor = 0
+
+			:= ZUIButton {
+				text = '+'
+				selected = 1
+				toggle = 1
+				layout_cellAlign = c
+				sendMsgOnSelect = "type=ZUIShow toZUI=examplePanel; type=ZUISet key=text val='-' toZUI=$this"
+				sendMsgOnUnselect = "type=ZUIHide toZUI=examplePanel; type=ZUISet key=text val='+' toZUI=$this"
+			}
+
+			:= ZUIText {
+				style = ExampleStyleSectionHeader
+				text = "Some other UI..."
+			}
+		}
+
+		:examplePanel = ZUIPanel {
+			style = styleGroupT
+
+			:totalSSELine = ZUILine {
+				lineEmbossed = 1
+				group = totalSSE
+			}
+		}
+	}
+
+	// EXTRAS container
+	//-----------------------------------------------------------------
+	:extrasContainerPanel = ZUIPanel {
+		//style = styleIndent1
+		pack_side = t
+		layout_cellFill = w
+		layout_padX = 10
+		layout_padY = 10
+		panelColor = 0;
+
+		: = ZUIButton {
+			textColor = 0x8080807F
+			selected = 0
+			toggle = 1
+			layout_forceW = 100
+			buttonColor = 0xa8a8a82F
+			buttonTextColor = 0x505050FF
+			sendMsgOnSelect = "type=ZUIShow toZUI=credits; type=ZUISet key=text val='Hide' toZUI=$this"
+			sendMsgOnUnselect = "type=ZUIHide toZUI=credits; type=ZUISet key=text val='Credits' toZUI=$this"
+		}
+
+		:credits = ZUIText {
+			textColor = 0x808080BF
+			wordWrap = 1
+			!multilineIgnoreWhitespace text
+				Put your credits here.
+				\n
+				\n
+                		For more information about this sofware, ....
+				\n
+				\n
+				\n
+			!endmultiline
+		}
+	}
+}
+
+:Tutorial = ZUIPanel {
+	style = styleDialog
+	hidden = 0
+	layoutManual = 1
+	layoutManual_x = W w - 2 /
+	layoutManual_y = H h - 2 /
+	layoutManual_w = 500
+	layoutManual_h = 400
+	parent = root
+	layout_indentL = 5
+	layout_indentT = 5
+	layout_indentR = 5
+	layout_indentB = 5
+	pack_fillLast = 1
+	pack_side = t
+
+	: = ZUIPanel {
+		style = styleGroupL
+		layout_cellFill = wh
+
+		: = ZUIText {
+			style = styleDialogTitle
+			text = "Welcome to <your app name here>"
+		}
+	}
+
+	: = ZUILine {
+		lineEmbossed = 1
+	}
+	
+	: = ZUIText {
+		wordWrap = 1
+		!multilineIgnoreWhitespace text
+			This program has a unique user interface that is best used with a three-button mouse.
+			\n
+			\n
+			First, there are no scroll bars. Rather, several parts of the program (control panel and file open/save menus)
+			are scrollable by right-clicking and dragging or by using the roller-wheel on the mouse.
+			Try it now, point the mouse over the left-hand control panel, then right-click and drag up and down 
+                        or scroll with the mouse wheel.
+			\n
+			\n
+			Second, many values shown throughout the program are dynamically adjustable 
+			by left-clicking and dragging up and down.  Alternatively, you can 
+			set the value explicitly using a single-left-click on the
+			value and then typing in the new value in the text box.  
+                        Try it on the example value shown below in yellow.  Left-click and drag the value up and down, or
+			single left-click to type in a new value.
+			\n
+			\n
+		!endmultiline
+	}
+
+	:= ZUIVar {
+		layout_cellAlign = c
+		style = ExampleStyleTwiddler
+		type = float
+		stdNotationPowLimit = 3
+		significantDigits = 4
+		formatShortest = 1
+		val = 1
+		layout_forceW = 50
+	}
+
+	: = ZUILine {
+		lineEmbossed = 1
+	}
+
+	:skipTutorial = ZUICheck {
+		text = "Do not show this message again"
+	}
+
+	: = ZUIButton {
+		layout_cellAlign = c
+		text = "OK"
+		sendMsg = "type=ZUIHide toZUI=$parent; type=TutorialOK"
+		layout_forceW = 50
+	}
+}
+
+
+
+
+
+
