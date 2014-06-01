@@ -370,7 +370,7 @@ void handleMsg( ZMsg *msg ) {
 	
 	if( zmsgIs(type,ZUIMouseClickOn) && zmsgIs(dir,D) && zmsgIs(which,L) && zmsgIs(shift,1) ) {
 		selectedSpring = springFindClosest( mouse );
-		adjusting = mouse.y;
+		adjusting = mouse.y;																												cd 
 		adjustingStartLen = selectedSpring->natLen;
 	}
 	else {
