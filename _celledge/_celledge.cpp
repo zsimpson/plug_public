@@ -7,6 +7,7 @@
 #include "memory.h"
 #include "string.h"
 #include "math.h"
+#include "float.h"
 // MODULE includes:
 // ZBSLIB includes:
 #include "zvars.h"
@@ -17,19 +18,21 @@
 #include "zrand.h"
 #include "ztime.h"
 #include "zgltools.h"
+#include "zmathtools.h"
 
 ZPLUGIN_BEGIN( celledge );
 
 ZVAR( float, Celledge_springForce, 2e-1 );
-ZVAR( float, Celledge_dt, 0.05 );
+ZVAR( float, Celledge_dt, 0.5 );
 ZVAR( float, Celledge_breakLen, 0.3 );
 ZVAR( float, Celledge_createLen, 0.2 );
-ZVAR( int, Celledge_iterPerRender, 1 );
+ZVAR( int, Celledge_iterPerRender, 200 );
 ZVAR( float, Celledge_shrink, 10 );
 ZVAR( float, Celledge_b, 3.f );
 ZVAR( float, Celledge_perimeter, 1.f );
 ZVAR( float, Celledge_interior, 1.f );
-ZVAR( float, Celledge_sticky, 1.f );
+ZVAR( float, Celledge_sticky, 4.5f );
+ZVAR( float, Celledge_natLen, 0.f );
 
 
 float radius = 3.f;
@@ -78,7 +81,9 @@ struct Spring {
 Cell cells[MAX_CELLS];
 Spring springs[MAX_SPRINGS];
 Cell *dragging = NULL;
-
+Spring *selectedSpring = NULL;
+float adjusting = 0;
+float adjustingStartLen = 0.f;
 
 Spring *springAdd() {
 	Spring *empty = NULL;
@@ -105,6 +110,24 @@ Spring *springFind( Vert *v0, Vert *v1 ) {
 	return NULL;
 }
 
+Spring *springFindClosest( FVec3 p ) {
+	int minI = 0;
+	float minD = 1e10f;
+	for( int i=0; i<MAX_SPRINGS; i++ ) {
+		if( springs[i].active ) {
+			FVec3 c = springs[i].verts[1]->pos;
+			c.sub( springs[i].verts[0]->pos );
+			FVec3 _d = zmathPointToLineSegment( springs[i].verts[0]->pos, c, p );
+			float d = _d.mag();
+			if( d < minD ) {
+				minD = d;
+				minI = i;
+			}
+		}
+	}
+	return &springs[minI];
+}
+			
 void springDelete( Spring *s ) {
 	s->active = 0;
 }
@@ -171,7 +194,7 @@ void physics() {
 }
 
 void buildAndBreakSprings() {
-	for( int i=0; i<100; i++ ) {
+	for( int i=0; i<10; i++ ) {
 		Cell *c = &cells[ zrandI(0,MAX_CELLS) ];
 		if( c->active ) {
 			Vert *v = &c->verts[ zrandI(0,6) ];
@@ -206,7 +229,7 @@ void buildAndBreakSprings() {
 		}
 	}
 	
-	for( int i=0; i<100; i++ ) {
+	for( int i=0; i<10; i++ ) {
 		Spring *s = &springs[ zrandI(0,MAX_SPRINGS) ];
 		if( s->active && s->breakable ) {
 			if( s->mag2() > Celledge_breakLen ) {
@@ -214,9 +237,7 @@ void buildAndBreakSprings() {
 			}
 		}
 	}
-
 }
-
 
 FVec3 hexQRToXY( int q, int r ) {
 	// hex to pixel
@@ -225,12 +246,18 @@ FVec3 hexQRToXY( int q, int r ) {
 
 void render() {
 	zviewpointSetupView();
+	FVec3 mouse = zviewpointProjMouseOnZ0Plane();
+
+	if( selectedSpring ) {
+		selectedSpring->natLen = adjustingStartLen * expf(mouse.y - adjusting);
+		Celledge_natLen = selectedSpring->natLen;
+	}
 
 	for( int i=0; i<Celledge_iterPerRender; i++ ) {
 		buildAndBreakSprings();
 		physics();
 	}
-		
+
 	glPointSize( 2.f );	
 	glBegin( GL_POINTS );
 	for( int i=0; i<MAX_CELLS; i++ ) {
@@ -254,6 +281,16 @@ void render() {
 		}
 	}
 	glEnd();
+
+	if( selectedSpring ) {
+		glColor3ub( 0, 0, 255 );
+		glLineWidth( 3.f );
+		glBegin( GL_LINES );
+			glColor3fv( (GLfloat *)selectedSpring->color );
+			glVertex3fv( selectedSpring->verts[0]->pos );
+			glVertex3fv( selectedSpring->verts[1]->pos );
+		glEnd();
+	}
 }
 
 void reset() {
@@ -321,30 +358,41 @@ void shutdown() {
 }
 
 void handleMsg( ZMsg *msg ) {
-	zviewpointHandleMsg( msg );
 	if( zMsgIsUsed() ) return;
+
+	zviewpointHandleMsg( msg );
+	zviewpointSetupView();
+	FVec3 mouse = zviewpointProjMouseOnZ0Plane();
 
 	if( zmsgIs(type,Key) && zmsgIs(which,q) ) {
 		reset();
 	}
-
-	if( zmsgIs(type,ZUIMouseClickOn) && zmsgIs(dir,D) && zmsgIs(which,L) ) {
-		zviewpointSetupView();
-		FVec3 mouse = zviewpointProjMouseOnZ0Plane();
-		float closestD = 1e10f;
-		for( int i=0; i<MAX_CELLS; i++ ) {
-			if( cells[i].active ) {
-				FVec3 cen = cells[i].center();
-				cen.sub( mouse );
-				float d = cen.mag2();
-				if( d < closestD ) {
-					closestD = d;
-					dragging = &cells[i];
+	
+	if( zmsgIs(type,ZUIMouseClickOn) && zmsgIs(dir,D) && zmsgIs(which,L) && zmsgIs(shift,1) ) {
+		selectedSpring = springFindClosest( mouse );
+		adjusting = mouse.y;
+		adjustingStartLen = selectedSpring->natLen;
+	}
+	else {
+		if( zmsgIs(type,ZUIMouseClickOn) && zmsgIs(dir,D) && zmsgIs(which,L) ) {
+			float closestD = 1e10f;
+			for( int i=0; i<MAX_CELLS; i++ ) {
+				if( cells[i].active ) {
+					FVec3 cen = cells[i].center();
+					cen.sub( mouse );
+					float d = cen.mag2();
+					if( d < closestD ) {
+						closestD = d;
+						dragging = &cells[i];
+					}
 				}
 			}
 		}
 	}
+	
 	if( zmsgIs(type,ZUIMouseClickOn) && zmsgIs(dir,U) && zmsgIs(which,L) ) {
+		selectedSpring = NULL;
+		adjusting = 0.f;
 		dragging = NULL;
 	}
 }
