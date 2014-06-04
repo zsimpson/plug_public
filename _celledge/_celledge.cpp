@@ -13,6 +13,7 @@
 #include "string.h"
 #include "math.h"
 #include "float.h"
+#include "assert.h"
 // MODULE includes:
 // ZBSLIB includes:
 #include "zvars.h"
@@ -28,10 +29,10 @@
 ZPLUGIN_BEGIN( celledge );
 
 ZVAR( float, Celledge_springForce, 2e-1 );
-ZVAR( float, Celledge_dt, 0.5 );
+ZVAR( float, Celledge_dt, 0.05 );
 ZVAR( float, Celledge_breakLen, 0.3 );
 ZVAR( float, Celledge_createLen, 0.2 );
-ZVAR( int, Celledge_iterPerRender, 200 );
+ZVAR( int, Celledge_iterPerRender, 50 );
 ZVAR( float, Celledge_shrink, 10 );
 ZVAR( float, Celledge_b, 3.f );
 ZVAR( float, Celledge_perimeter, 1.f );
@@ -43,7 +44,8 @@ ZVAR( float, Celledge_natLen, 0.f );
 float radius = 3.f;
 
 #define MAX_CELLS (128)
-#define MAX_SPRINGS (1024)
+#define MAX_SPRINGS (8000)
+#define MAX_SIDES (64)
 
 struct Vert {
 	FVec3 pos;
@@ -52,16 +54,31 @@ struct Vert {
 
 struct Cell {
 	int active;
-	Vert verts[6];	
+	int numSides;
+	int reproducing;
+	Vert verts[MAX_SIDES];	
 	
 	FVec3 center() {
 		FVec3 p;
-		for( int i=0; i<6; i++ ) {
+		for( int i=0; i<numSides; i++ ) {
 			p.add( verts[i].pos );
 		}
-		p.div( 6.f );
+		p.div( (float)numSides );
 		return p;
 	}
+
+	void update() {
+		if( reproducing ) {
+			int v0 = 0;
+			int v1 = numSides / 2;
+			FVec3 a = verts[v0].pos;
+			a.sub( verts[v1].pos );
+			if( a.mag2() < 0.01f ) {
+				// Create a new cell.  @TODO Hard
+			}
+		}
+	}
+
 };
 
 struct Spring {
@@ -72,9 +89,7 @@ struct Spring {
 	int breakable;
 	int type;
 		#define STICKY (0)
-		#define PERIMETER (1)
-		#define CROSS_INTERIOR (2)
-		#define AROUND_INTERIOR (3)
+		#define INTERIOR (1)
 	
 	float mag2() {
 		FVec3 p = verts[0]->pos;
@@ -98,6 +113,7 @@ Spring *springAdd() {
 			return &springs[i];
 		}
 	}
+	assert( !"Too many springs" );
 	return NULL;
 }
 
@@ -137,6 +153,26 @@ void springDelete( Spring *s ) {
 	s->active = 0;
 }
 
+void cellReproduce( Cell *c ) {
+	c->reproducing = 1;
+
+	// PICK opposite verts and reduce the length of all their springs
+	int v0 = 0;
+	int v1 = c->numSides / 2;
+
+	// FIND every interior spring that touches v0
+	for( int i=0; i<MAX_SPRINGS; i++ ) {
+		Spring *s = &springs[i];
+		if( s->type == INTERIOR && (s->verts[0] == &c->verts[v0] || s->verts[1] == &c->verts[v0]) ) {
+			s->natLen = 0.f;
+		}
+		if( s->type == INTERIOR && (s->verts[0] == &c->verts[v1] || s->verts[1] == &c->verts[v1]) ) {
+			s->natLen = 0.f;
+		}
+	}
+}
+
+
 void physics() {
 	float springForceByType[4] = { 
 		Celledge_sticky,
@@ -149,7 +185,8 @@ void physics() {
 	float m = (radius - b) / 1.f;
 
 	for( int i=0; i<MAX_CELLS; i++ ) {
-		for( int j=0; j<6; j++ ) {
+		for( int j=0; j<cells[i].numSides; j++ ) {
+			cells[i].update();
 			cells[i].verts[j].force.origin();
 		}
 	}
@@ -159,7 +196,7 @@ void physics() {
 		FVec3 force = dragging->center();
 		force.sub( mouse );
 		force.mul( 0.1f );
-		for( int j=0; j<6; j++ ) {
+		for( int j=0; j<dragging->numSides; j++ ) {
 			dragging->verts[j].force.sub( force );
 		}
 	}
@@ -190,7 +227,7 @@ void physics() {
 	}
 
 	for( int i=0; i<MAX_CELLS; i++ ) {
-		for( int j=0; j<6; j++ ) {
+		for( int j=0; j<cells[i].numSides; j++ ) {
 			Vert &v = cells[i].verts[j];
 			v.force.mul( Celledge_dt );		
 			v.pos.add( v.force );
@@ -202,11 +239,11 @@ void buildAndBreakSprings() {
 	for( int i=0; i<10; i++ ) {
 		Cell *c = &cells[ zrandI(0,MAX_CELLS) ];
 		if( c->active ) {
-			Vert *v = &c->verts[ zrandI(0,6) ];
+			Vert *v = &c->verts[ zrandI(0,c->numSides) ];
 			for( int j=0; j<MAX_CELLS; j++ ) {
 				Cell *cj = &cells[j];
 				if( c != cj && cj->active ) {
-					for( int k=0; k<6; k++ ) {
+					for( int k=0; k<cj->numSides; k++ ) {
 						FVec3 p = cj->verts[k].pos;
 						p.sub( v->pos );
 						if( p.mag2() < Celledge_createLen ) {
@@ -267,7 +304,7 @@ void render() {
 	glBegin( GL_POINTS );
 	for( int i=0; i<MAX_CELLS; i++ ) {
 		if( cells[i].active ) {
-			for( int j=0; j<6; j++ ) {
+			for( int j=0; j<cells[i].numSides; j++ ) {
 				Vert &v = cells[i].verts[j];
 				glVertex2fv( (GLfloat *)&v.pos );
 			}
@@ -311,46 +348,41 @@ void reset() {
 		for( int r=0; r<rn; r++ ) {
 			FVec3 center = hexQRToXY( q, r );
 
+			int sides = 12;
+
 			// MAKE verts for cell
 			cells[cellCount].active = 1;
-			for( int a=0; a<6; a++ ) {
-				float _a = (float)a / 6.f * 3.14f * 2.f + (30.f/360.f*2.f*3.14f);
+			cells[cellCount].numSides = sides;
+			for( int a=0; a<sides; a++ ) {
+				float _a = (float)a / (float)sides * 3.14f * 2.f + (30.f/360.f*2.f*3.14f);
 				cells[cellCount].verts[a].pos = FVec3( radius * cosf(_a), radius * sinf(_a), 0.f );
 				cells[cellCount].verts[a].pos.add( center );
 			}
-			
-			// MAKE springs for cell perimeter
-			for( int j=0; j<6; j++ ) {
-				Spring *s = springAdd();
-				s->verts[0] = &cells[cellCount].verts[(j+0)%6];
-				s->verts[1] = &cells[cellCount].verts[(j+1)%6];
-				s->natLen = radius;
-				s->color[0] = 1.f;
-				s->breakable = 0;
-				s->type = PERIMETER;
-			}
-			
-			// MAKE springs for cross cell interior
-			for( int j=0; j<3; j++ ) {
-				Spring *s = springAdd();
-				s->verts[0] = &cells[cellCount].verts[(j+0)%6];
-				s->verts[1] = &cells[cellCount].verts[(j+3)%6];
-				s->natLen = 2.f*radius;
-				s->breakable = 0;
-				s->type = CROSS_INTERIOR;
-			}
-			
-			// MAKE springs for cross perimeter interior
-			for( int j=0; j<6; j++ ) {
-				Spring *s = springAdd();
-				s->verts[0] = &cells[cellCount].verts[(j+0)%6];
-				s->verts[1] = &cells[cellCount].verts[(j+2)%6];
-				s->natLen = 1.5f*radius;
-				s->breakable = 0;
-				s->type = AROUND_INTERIOR;
+
+			// MAKE interior springs
+			for( int j=0; j<sides; j++ ) {
+				for( int k=j+1; k<sides; k++ ) {
+					Spring *s = springAdd();
+					s->verts[0] = &cells[cellCount].verts[j];
+					s->verts[1] = &cells[cellCount].verts[k];
+					FVec3 p = s->verts[0]->pos;
+					p.sub( s->verts[1]->pos );
+					s->natLen = p.mag();
+					s->breakable = 0;
+					s->type = INTERIOR;
+					s->color[0] = 0.65f;
+					s->color[1] = 0.65f;
+					s->color[2] = 0.65f;
+					if( k==j+1 || (j==0 && k==sides-1) ) {
+						s->color[0] = 1.f;
+						s->color[1] = 0.f;
+						s->color[2] = 0.f;
+					}
+				}
 			}
 
 			cellCount++;
+			assert( cellCount < MAX_CELLS );
 		}
 	}
 }
@@ -371,6 +403,10 @@ void handleMsg( ZMsg *msg ) {
 
 	if( zmsgIs(type,Key) && zmsgIs(which,q) ) {
 		reset();
+	}
+	
+	if( zmsgIs(type,Key) && zmsgIs(which,w) ) {
+		cellReproduce( &cells[0] );
 	}
 	
 	if( zmsgIs(type,ZUIMouseClickOn) && zmsgIs(dir,D) && zmsgIs(which,L) && zmsgIs(shift,1) ) {
