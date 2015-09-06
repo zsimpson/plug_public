@@ -21,6 +21,7 @@ ZPLUGIN_BEGIN( em );
 
 ZVAR( float, Em_scale, 1.0 );
 
+GLuint arrow = 0;
 
 GLuint makeArrow() {
 	GLuint index = glGenLists(1);
@@ -52,8 +53,6 @@ GLuint makeArrow() {
 void render() {
 	glClear( GL_DEPTH_BUFFER_BIT );
 	zviewpointSetupView();
-	
-	GLuint arrow = makeArrow();
 
 	glEnable( GL_DEPTH_TEST );
 	glEnable( GL_NORMALIZE );
@@ -114,6 +113,7 @@ void render() {
 }
 
 void startup() {
+	arrow = makeArrow();
 }
 
 void shutdown() {
